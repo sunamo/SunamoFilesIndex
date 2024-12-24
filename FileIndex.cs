@@ -14,18 +14,18 @@ public class FileIndex
     /// <summary>
     /// Without base paths
     /// </summary>
-    public static List<string> relativeDirectories = new();
+    static readonly List<string> relativeDirectories = [];
     #endregion
 
     #region Variables
     /// <summary>
     ///
     /// </summary>
-    public List<FileItem> files = new();
+    public List<FileItem> files = [];
     /// <summary>
     /// All folders which was processed expect root
     /// </summary>
-    private List<FolderItem> _folders = new();
+    private readonly List<FolderItem> _folders = [];
     private int _actualFolderID = -1;
 
     // TODO: Is directories somewhere used?
@@ -34,7 +34,7 @@ public class FileIndex
     /// Všechny složky tak jak byly postupně přidávany do metody AddFolderRecursively
     ///
     /// </summary>
-    public static List<string> directories = new();
+    static readonly List<string> directories = [];
 
 
     public string? BasePath
@@ -78,7 +78,6 @@ public class FileIndex
         directories.Add(folder);
 
         var dirs = Directory.GetDirectories(folder, "*", SearchOption.AllDirectories);
-        List<string> fils = new();
 
         foreach (var item in dirs)
         {
@@ -107,10 +106,12 @@ public class FileIndex
 
     private FolderItem GetFolderItem(string p)
     {
-        FolderItem fi = new();
-        fi.IDParent = _actualFolderID;
-        fi.Name = Path.GetFileName(p);
-        fi.Path = Path.GetDirectoryName(p);
+        FolderItem fi = new()
+        {
+            IDParent = _actualFolderID,
+            Name = Path.GetFileName(p),
+            Path = Path.GetDirectoryName(p)
+        };
         return fi;
     }
 
@@ -139,10 +140,12 @@ public class FileIndex
     /// <param name="basePath"></param>
     private FileItem GetFileItem(string p, string basePath)
     {
-        FileItem fi = new();
-        //fi.IDDirectory = folders.Count;
-        //fi.IDParent = actualFolderID;
-        fi.Name = Path.GetFileName(p);
+        FileItem fi = new()
+        {
+            //fi.IDDirectory = folders.Count;
+            //fi.IDParent = actualFolderID;
+            Name = Path.GetFileName(p)
+        };
         //fi.Path = Path.GetDirectoryName(p);
 
         //if (relativeDirectoryName)
@@ -196,7 +199,7 @@ public class FileIndex
     /// <param name="folders"></param>
     public static Dictionary<string, FileIndex> IndexFolders(IList<string> folders)
     {
-        Dictionary<string, FileIndex> vr = new();
+        Dictionary<string, FileIndex> vr = [];
         foreach (var item in folders)
         {
             FileIndex fi = new();
@@ -300,9 +303,9 @@ public class FileIndex
         {
             // Create collections for all rows
             // key - row, value - size
-            Dictionary<int, long> fileSize = new();
+            Dictionary<int, long> fileSize = [];
             // For easy compare of size and find out any difference
-            List<long> fileSize2 = new();
+            List<long> fileSize2 = [];
 
             for (int r = 0; r < rows; r++)
             {
@@ -323,7 +326,7 @@ public class FileIndex
             fileSize2.Sort();
 
             long min = fileSize2[0];
-            long max = fileSize2[fileSize2.Count - 1];
+            long max = fileSize2[^1];
             #endregion
 
             #region Tick potencially unecesary files

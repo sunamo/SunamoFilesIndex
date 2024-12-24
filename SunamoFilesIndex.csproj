@@ -4,8 +4,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Description>Index files/folders and getting them with conditions</Description>
-    <Version>24.11.9.1</Version>
-    <PackageReleaseNotes>First code</PackageReleaseNotes>
+    <NoWarn>CA1822</NoWarn>
+    <Version>24.12.24.1</Version>
+    <PackageReleaseNotes>Fixed warning and infos </PackageReleaseNotes>
     <Authors>www.sunamo.cz</Authors>
     <Copyright>www.sunamo.cz</Copyright>
     <PackageProjectUrl>https://sunamo.cz/</PackageProjectUrl>
