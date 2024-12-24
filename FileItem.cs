@@ -2,21 +2,11 @@ namespace SunamoFilesIndex;
 
 public class FileItem //: IFSItem
 {
-    private string _name = null;
+
     /// <summary>
     /// File name
     /// </summary>
-    public string Name
-    {
-        get
-        {
-            return _name;
-        }
-        set
-        {
-            _name = value;
-        }
-    }
+    public string? Name { get; set; } = null;
 
     #region Commented - use only ID, why I was write this solution??
     //string path = null;

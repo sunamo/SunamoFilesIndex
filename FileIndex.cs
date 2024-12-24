@@ -14,18 +14,18 @@ public class FileIndex
     /// <summary>
     /// Without base paths
     /// </summary>
-    public static List<string> relativeDirectories = new List<string>();
+    public static List<string> relativeDirectories = new();
     #endregion
 
     #region Variables
     /// <summary>
     ///
     /// </summary>
-    public List<FileItem> files = new List<FileItem>();
+    public List<FileItem> files = new();
     /// <summary>
     /// All folders which was processed expect root
     /// </summary>
-    private List<FolderItem> _folders = new List<FolderItem>();
+    private List<FolderItem> _folders = new();
     private int _actualFolderID = -1;
 
     // TODO: Is directories somewhere used?
@@ -34,15 +34,13 @@ public class FileIndex
     /// Všechny složky tak jak byly postupně přidávany do metody AddFolderRecursively
     ///
     /// </summary>
-    public static List<string> directories = new List<string>();
-    private string _basePath = null;
+    public static List<string> directories = new();
 
-    public string BasePath
+
+    public string? BasePath
     {
-        get
-        {
-            return _basePath;
-        }
+        get;
+        private set;
     }
     #endregion
 
@@ -72,16 +70,15 @@ public class FileIndex
     /// A1 musí být cesta zakončená slashem
     /// </summary>
     /// <param name="folder"></param>
-    /// <param name="relativeDirectoryName"></param>
     public void AddFolderRecursively(string folder)
     {
         folder = FS.WithEndSlash(folder);
-        _basePath = folder;
+        BasePath = folder;
         _actualFolderID++;
         directories.Add(folder);
 
         var dirs = Directory.GetDirectories(folder, "*", SearchOption.AllDirectories);
-        List<string> fils = new List<string>();
+        List<string> fils = new();
 
         foreach (var item in dirs)
         {
@@ -101,7 +98,6 @@ public class FileIndex
     /// Add with relative file path
     /// </summary>
     /// <param name="basePath"></param>
-    /// <param name="relativeDirectoryName"></param>
     /// <param name="folder"></param>
     private void AddFilesFromFolder(string basePath, string folder)
     {
@@ -111,7 +107,7 @@ public class FileIndex
 
     private FolderItem GetFolderItem(string p)
     {
-        FolderItem fi = new FolderItem();
+        FolderItem fi = new();
         fi.IDParent = _actualFolderID;
         fi.Name = Path.GetFileName(p);
         fi.Path = Path.GetDirectoryName(p);
@@ -141,10 +137,9 @@ public class FileIndex
     /// </summary>
     /// <param name="p"></param>
     /// <param name="basePath"></param>
-    /// <param name="relativeDirectoryName"></param>
     private FileItem GetFileItem(string p, string basePath)
     {
-        FileItem fi = new FileItem();
+        FileItem fi = new();
         //fi.IDDirectory = folders.Count;
         //fi.IDParent = actualFolderID;
         fi.Name = Path.GetFileName(p);
@@ -152,7 +147,13 @@ public class FileIndex
 
         //if (relativeDirectoryName)
         //{
-        string relDirName = Path.GetDirectoryName(p).Replace(basePath, "");
+        var basePathName = Path.GetDirectoryName(p);
+        if (basePathName == null)
+        {
+            throw new Exception($"{basePathName} is null");
+        }
+
+        string relDirName = basePathName.Replace(basePath, "");
         if (!relativeDirectories.Contains(relDirName))
         {
             relativeDirectories.Add(relDirName);
@@ -195,10 +196,10 @@ public class FileIndex
     /// <param name="folders"></param>
     public static Dictionary<string, FileIndex> IndexFolders(IList<string> folders)
     {
-        Dictionary<string, FileIndex> vr = new Dictionary<string, FileIndex>();
+        Dictionary<string, FileIndex> vr = new();
         foreach (var item in folders)
         {
-            FileIndex fi = new FileIndex();
+            FileIndex fi = new();
             fi.AddFolderRecursively(item);
             vr.Add(item, fi);
         }
@@ -241,10 +242,10 @@ public class FileIndex
     /// </summary>
     /// <param name="files"></param>
     /// <param name="relativeFilePathForEveryColumn"></param>
-    public static CheckBoxDataShared<TWithSize<string>>[,] ExistsFilesOnDrive(Dictionary<string, FileIndex> files, Dictionary<string, int> relativeFilePathForEveryColumn)
+    public static CheckBoxDataShared<TWithSize<string>?>[,] ExistsFilesOnDrive(Dictionary<string, FileIndex> files, Dictionary<string, int> relativeFilePathForEveryColumn)
     {
         int columns = relativeFilePathForEveryColumn.Count;
-        CheckBoxDataShared<TWithSize<string>>[,] vr = new CheckBoxDataShared<TWithSize<string>>[files.Count, columns];
+        CheckBoxDataShared<TWithSize<string>?>[,] vr = new CheckBoxDataShared<TWithSize<string>?>[files.Count, columns];
         int r = -1;
 
         // Process all rows
@@ -268,11 +269,13 @@ public class FileIndex
                 {
                     long l2 = new FileInfo(fullFilePath).Length;
                     // To result set CheckBoxData - full path and size
-                    vr[r, columnToInsert] = new CheckBoxDataShared<TWithSize<string>> { t = new TWithSize<string> { t = fullFilePath, size = l2 } };
+                    vr[r, columnToInsert] = new CheckBoxDataShared<TWithSize<string>?> { t = new TWithSize<string> { t = fullFilePath, size = l2 } };
                 }
                 else
                 {
+#pragma warning disable CS8625
                     vr[r, columnToInsert] = null;
+#pragma warning restore
                 }
             }
         }
@@ -297,15 +300,20 @@ public class FileIndex
         {
             // Create collections for all rows
             // key - row, value - size
-            Dictionary<int, long> fileSize = new Dictionary<int, long>();
+            Dictionary<int, long> fileSize = new();
             // For easy compare of size and find out any difference
-            List<long> fileSize2 = new List<long>();
+            List<long> fileSize2 = new();
 
             for (int r = 0; r < rows; r++)
             {
                 CheckBoxDataShared<TWithSize<string>> cbd = allRows[r, c];
                 if (cbd != null)
                 {
+                    if (cbd.t == null)
+                    {
+                        throw new Exception($"{cbd.t} is null");
+                    }
+
                     fileSize.Add(r, cbd.t.size);
                     fileSize2.Add(cbd.t.size);
                 }
