@@ -1,6 +1,4 @@
 namespace SunamoFilesIndex;
-using SunamoFilesIndex._sunamo;
-using SunamoFilesIndex.Data;
 
 /// <summary>
 /// Připomíná práci s databází - k označení složek se používají čísla int
@@ -16,7 +14,6 @@ public class FileIndex
     /// </summary>
     static readonly List<string> relativeDirectories = [];
     #endregion
-
     #region Variables
     /// <summary>
     ///
@@ -27,7 +24,6 @@ public class FileIndex
     /// </summary>
     private readonly List<FolderItem> _folders = [];
     private int _actualFolderID = -1;
-
     // TODO: Is directories somewhere used?
     /// <summary>
     /// NEOBSAHUJE VSECHNY ZPRACOVANE SLOZKY
@@ -35,15 +31,12 @@ public class FileIndex
     ///
     /// </summary>
     static readonly List<string> directories = [];
-
-
     public string? BasePath
     {
         get;
         private set;
     }
     #endregion
-
     #region Instance method
     /// <summary>
     /// Get folders with name A2. A1 is IDParent
@@ -58,12 +51,10 @@ public class FileIndex
         }
         return _folders.Where(c => c.Name == name).Where(d => prohledavatSlozky.Contains(d.IDParent)).ToList();
     }
-
     public List<FileItem> FindAllFilesWithName(string name)
     {
         return files.FindAll(d => d.Name == name);
     }
-
     /// <summary>
     /// Process all files including subfolders
     ///
@@ -76,18 +67,14 @@ public class FileIndex
         BasePath = folder;
         _actualFolderID++;
         directories.Add(folder);
-
         var dirs = Directory.GetDirectories(folder, "*", SearchOption.AllDirectories);
-
         foreach (var item in dirs)
         {
             _folders.Add(GetFolderItem(item));
             AddFilesFromFolder(folder, item);
         }
-
         AddFilesFromFolder(folder, FS.WithoutEndSlash(folder));
     }
-
     /// <summary>
     /// Index all files from A3.
     ///
@@ -103,7 +90,6 @@ public class FileIndex
         var files2 = Directory.GetFiles(folder, "*.*", SearchOption.TopDirectoryOnly);
         files2.ToList().ForEach(c => files.Add(GetFileItem(c, basePath)));
     }
-
     private FolderItem GetFolderItem(string p)
     {
         FolderItem fi = new()
@@ -114,7 +100,6 @@ public class FileIndex
         };
         return fi;
     }
-
     /// <summary>
     /// Return index of folder or -1 if cannot found
     /// </summary>
@@ -124,12 +109,10 @@ public class FileIndex
         folder = FS.WithEndSlash(folder);
         return relativeDirectories.IndexOf(folder);
     }
-
     public string GetRelativeFolder(int folder)
     {
         return relativeDirectories[folder];
     }
-
     /// <summary>
     /// Return object FIleItem.
     /// Add to relativeDirectories, if A3.
@@ -147,7 +130,6 @@ public class FileIndex
             Name = Path.GetFileName(p)
         };
         //fi.Path = Path.GetDirectoryName(p);
-
         //if (relativeDirectoryName)
         //{
         var basePathName = Path.GetDirectoryName(p);
@@ -155,7 +137,6 @@ public class FileIndex
         {
             throw new Exception($"{basePathName} is null");
         }
-
         string relDirName = basePathName.Replace(basePath, "");
         if (!relativeDirectories.Contains(relDirName))
         {
@@ -170,7 +151,6 @@ public class FileIndex
         //}
         return fi;
     }
-
     /// <summary>
     /// Clear folders and files collection
     /// </summary>
@@ -179,18 +159,15 @@ public class FileIndex
         _folders.Clear();
         files.Clear();
     }
-
     public int GetIndexOfFolder(FolderItem item)
     {
         return _folders.IndexOf(item);
     }
-
     public IList<FileItem> GetFilesInRelativeFolder(int p)
     {
         return files.Where(c => c.IDRelativeDirectory == p).ToList();
     }
     #endregion
-
     #region Has FileIndex as input or output parameter
     /// <summary>
     /// Process recursively A1 - for every folder one object FileIndex in output
@@ -208,7 +185,6 @@ public class FileIndex
         }
         return vr;
     }
-
     /// <summary>
     /// Prida do A3 soubor s relativni cestou pokud neexistuje
     /// Use relative path to file to find relative id directory and insert with file path to ID to A3
@@ -227,7 +203,6 @@ public class FileIndex
         foreach (var item2 in fi.files)
         {
             string relativeFilePath = (relativeDirectories[item2.IDRelativeDirectory] + item2.Name).Replace(folderOfSolution, "");
-
             if (!relativeFilePathForEveryColumn.ContainsKey(relativeFilePath))
             {
                 int relativeDirectoryId = filesFromAllFoldersUniqueRelative.IndexOf(relativeFilePath);
@@ -235,7 +210,6 @@ public class FileIndex
             }
         }
     }
-
     /// <summary>
     /// Tato metoda má za úkol vytvořit matici ze souborů v A1, kde každý soubor bude v daném sloupci dle A2
     /// Kdyz soubor nebude existovat bude null
@@ -250,7 +224,6 @@ public class FileIndex
         int columns = relativeFilePathForEveryColumn.Count;
         CheckBoxDataShared<TWithSize<string>?>[,] vr = new CheckBoxDataShared<TWithSize<string>?>[files.Count, columns];
         int r = -1;
-
         // Process all rows
         foreach (var item in files)
         {
@@ -258,16 +231,13 @@ public class FileIndex
             var fi = item.Value;
             //List<long> fileSize = new List<long>(columns);
             //List<int> added = new List<int>();
-
             for (int c = 0; c < fi.files.Count; c++)
             {
                 // get files in column c
                 var file = fi.files[c];
-
                 string relativeFilePath = (relativeDirectories[file.IDRelativeDirectory] + file.Name).Replace(item.Key, "");
                 int columnToInsert = relativeFilePathForEveryColumn[relativeFilePath];
                 string fullFilePath = relativeDirectories[file.IDRelativeDirectory] + file.Name;
-
                 if (File.Exists(fullFilePath))
                 {
                     long l2 = new FileInfo(fullFilePath).Length;
@@ -282,11 +252,9 @@ public class FileIndex
                 }
             }
         }
-
         return vr;
     }
     #endregion
-
     #region Not use FileIndex
     // TODO: Not use FileIndex, move to other locations
     /// <summary>
@@ -297,7 +265,6 @@ public class FileIndex
     {
         int columns = allRows.GetLength(1);
         int rows = allRows.GetLength(0);
-
         // List all files
         for (int c = 0; c < columns; c++)
         {
@@ -306,7 +273,6 @@ public class FileIndex
             Dictionary<int, long> fileSize = [];
             // For easy compare of size and find out any difference
             List<long> fileSize2 = [];
-
             for (int r = 0; r < rows; r++)
             {
                 CheckBoxDataShared<TWithSize<string>> cbd = allRows[r, c];
@@ -316,19 +282,15 @@ public class FileIndex
                     {
                         throw new Exception($"{cbd.t} is null");
                     }
-
                     fileSize.Add(r, cbd.t.size);
                     fileSize2.Add(cbd.t.size);
                 }
             }
-
             #region Get min and max size
             fileSize2.Sort();
-
             long min = fileSize2[0];
             long max = fileSize2[^1];
             #endregion
-
             #region Tick potencially unecesary files
             if (fileSize.Count > 1)
             {
@@ -357,7 +319,6 @@ public class FileIndex
         }
         return allRows;
     }
-
     /// <summary>
     /// Check CheckBox in condition of size and A7 in location specified parameter row A2 and column A3
     ///
