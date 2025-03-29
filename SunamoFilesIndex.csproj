@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <Description>Index files/folders and getting them with conditions</Description>
     <NoWarn>CA1822</NoWarn>
-    <Version>24.12.24.1</Version>
-    <PackageReleaseNotes>Fixed warning and infos </PackageReleaseNotes>
+    <Version>25.3.29.1</Version>
+    <PackageReleaseNotes>Updated nuget to latest versions</PackageReleaseNotes>
     <Authors>www.sunamo.cz</Authors>
     <Copyright>www.sunamo.cz</Copyright>
     <PackageProjectUrl>https://sunamo.cz/</PackageProjectUrl>
@@ -16,7 +16,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="*" Pack="True" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" Pack="True" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>$(DefineConstants);ASYNC</DefineConstants>
