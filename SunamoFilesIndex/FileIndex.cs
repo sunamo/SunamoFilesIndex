@@ -1,6 +1,7 @@
+namespace SunamoFilesIndex;
+
 // EN: Variable names have been checked and replaced with self-descriptive names
 // CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
-namespace SunamoFilesIndex;
 /// <summary>
 /// Připomíná práci s databází - k označení složek se používají čísla int
 ///
