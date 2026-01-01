@@ -1,27 +1,53 @@
 namespace SunamoFilesIndex._sunamo;
 
+/// <summary>
+/// File system utility methods
+/// </summary>
 internal class FS
 {
-    internal static string WithoutEndSlash(string v)
+    /// <summary>
+    /// Removes trailing backslash from path
+    /// </summary>
+    /// <param name="path">The path to process</param>
+    /// <returns>Path without ending slash</returns>
+    internal static string WithoutEndSlash(string path)
     {
-        return WithoutEndSlash(ref v);
+        return WithoutEndSlash(ref path);
     }
-    internal static string WithoutEndSlash(ref string v)
+
+    /// <summary>
+    /// Removes trailing backslash from path (ref version)
+    /// </summary>
+    /// <param name="path">The path to process</param>
+    /// <returns>Path without ending slash</returns>
+    internal static string WithoutEndSlash(ref string path)
     {
-        v = v.TrimEnd('\\');
-        return v;
+        path = path.TrimEnd('\\');
+        return path;
     }
-    internal static string WithEndSlash(string v)
+
+    /// <summary>
+    /// Ensures path ends with backslash
+    /// </summary>
+    /// <param name="path">The path to process</param>
+    /// <returns>Path with ending slash</returns>
+    internal static string WithEndSlash(string path)
     {
-        return WithEndSlash(ref v);
+        return WithEndSlash(ref path);
     }
-    internal static string WithEndSlash(ref string v)
+
+    /// <summary>
+    /// Ensures path ends with backslash and capitalizes first character (ref version)
+    /// </summary>
+    /// <param name="path">The path to process</param>
+    /// <returns>Path with ending slash and capitalized first character</returns>
+    internal static string WithEndSlash(ref string path)
     {
-        if (v != string.Empty)
+        if (path != string.Empty)
         {
-            v = v.TrimEnd('\\') + '\\';
+            path = path.TrimEnd('\\') + '\\';
         }
-        SH.FirstCharUpper(ref v);
-        return v;
+        SH.FirstCharUpper(ref path);
+        return path;
     }
 }

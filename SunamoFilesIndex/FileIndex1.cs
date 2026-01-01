@@ -1,21 +1,19 @@
 namespace SunamoFilesIndex;
 
-// EN: Variable names have been checked and replaced with self-descriptive names
-// CZ: Názvy proměnných byly zkontrolovány a nahrazeny samopopisnými názvy
 /// <summary>
-/// Připomíná práci s databází - k označení složek se používají čísla int
+/// Resembles database work - uses int numbers to mark folders
 ///
 /// Working with CheckBoxData
-/// Use FolderItem, FileItem,
+/// Use FolderItem, FileItem
 /// </summary>
 public partial class FileIndex
 {
-    // TODO: Not use FileIndex, move to other locations
     /// <summary>
     /// Check (or uncheck) all in columns by filesize
     /// </summary>
-    /// <param name = "allRows"></param>
-    public static CheckBoxDataShared<TWithSize<string>>[, ] CheckVertically(CheckBoxDataShared<TWithSize<string>>[, ] allRows)
+    /// <param name="allRows">The matrix of checkbox data to process</param>
+    /// <returns>Updated matrix with ticked/unticked checkboxes based on file sizes</returns>
+    public static CheckBoxDataShared<TWithSize<string>>[,] CheckVertically(CheckBoxDataShared<TWithSize<string>>[,] allRows)
     {
         int columns = allRows.GetLength(1);
         int rows = allRows.GetLength(0);
@@ -29,25 +27,26 @@ public partial class FileIndex
             List<long> fileSize2 = [];
             for (int r = 0; r < rows; r++)
             {
-                CheckBoxDataShared<TWithSize<string>> cbd = allRows[r, c];
-                if (cbd != null)
+                CheckBoxDataShared<TWithSize<string>> checkBoxData = allRows[r, c];
+                if (checkBoxData != null)
                 {
-                    if (cbd.t == null)
+                    if (checkBoxData.Value == null)
                     {
-                        throw new Exception($"{cbd.t} is null");
+                        throw new Exception($"{checkBoxData.Value} is null");
                     }
 
-                    fileSize.Add(r, cbd.t.size);
-                    fileSize2.Add(cbd.t.size);
+                    fileSize.Add(r, checkBoxData.Value.Size);
+                    fileSize2.Add(checkBoxData.Value.Size);
                 }
             }
 
-#region Get min and max size
+            #region Get min and max size
             fileSize2.Sort();
             long min = fileSize2[0];
             long max = fileSize2[^1];
-#endregion
-#region Tick potencially unecesary files
+            #endregion
+
+            #region Tick potentially unnecessary files
             if (fileSize.Count > 1)
             {
                 if (min == max)
@@ -71,67 +70,67 @@ public partial class FileIndex
                 // Maybe leave file with zero size?
                 TickIfItIsForDelete(allRows, 0, c, fileSize, min, max, false);
             }
-#endregion
+            #endregion
         }
 
         return allRows;
     }
 
     /// <summary>
-    /// Check CheckBox in condition of size and A7 in location specified parameter row A2 and column A3
+    /// Check CheckBox based on file size conditions at specified row and column location
     ///
-    /// A4 to find size of file. In keys are indexes.
-    /// If size is A5 min, check.
-    /// If A6 max, uncheck.
-    /// Or none of this, set null. This behaviour can be changed setted A7 forceToAll
+    /// If size equals min, check the checkbox.
+    /// If size equals max, uncheck the checkbox.
+    /// Otherwise set to null or use forceToAll value if specified.
     /// </summary>
-    /// <param name = "allRows"></param>
-    /// <param name = "row"></param>
-    /// <param name = "column"></param>
-    /// <param name = "fileSize"></param>
-    /// <param name = "min"></param>
-    /// <param name = "max"></param>
-    /// <param name = "forceToAll"></param>
-    private static void TickIfItIsForDelete(CheckBoxDataShared<TWithSize<string>>[, ] allRows, int row, int column, Dictionary<int, long> fileSize, long min, long max, bool? forceToAll)
+    /// <param name="allRows">The matrix of checkbox data</param>
+    /// <param name="row">Row index</param>
+    /// <param name="column">Column index</param>
+    /// <param name="fileSize">Dictionary with row indices as keys and file sizes as values</param>
+    /// <param name="min">Minimum file size</param>
+    /// <param name="max">Maximum file size</param>
+    /// <param name="forceToAll">Optional forced value for all checkboxes</param>
+    private static void TickIfItIsForDelete(CheckBoxDataShared<TWithSize<string>>[,] allRows, int row, int column, Dictionary<int, long> fileSize, long min, long max, bool? forceToAll)
     {
-        CheckBoxDataShared<TWithSize<string>> cbd = allRows[row, column];
-        if (cbd != null)
+        CheckBoxDataShared<TWithSize<string>> checkBoxData = allRows[row, column];
+        if (checkBoxData != null)
         {
-            long filSiz = fileSize[row];
-            if (filSiz == -1)
+            long currentFileSize = fileSize[row];
+            if (currentFileSize == -1)
             {
+                // File size not available - do nothing
             }
-            else if (filSiz == max)
+            else if (currentFileSize == max)
             {
                 if (forceToAll.HasValue)
                 {
-                    cbd.tick = forceToAll.Value;
+                    checkBoxData.Tick = forceToAll.Value;
                 }
                 else
                 {
-                    cbd.tick = false;
+                    checkBoxData.Tick = false;
                 }
             }
-            else if (filSiz == min)
+            else if (currentFileSize == min)
             {
                 if (forceToAll.HasValue)
                 {
-                    cbd.tick = forceToAll.Value;
+                    checkBoxData.Tick = forceToAll.Value;
                 }
                 else
                 {
-                    cbd.tick = true;
+                    checkBoxData.Tick = true;
                 }
             }
             else
             {
                 if (forceToAll.HasValue)
                 {
-                    cbd.tick = forceToAll.Value;
+                    checkBoxData.Tick = forceToAll.Value;
                 }
                 else
                 {
-                    cbd.tick = null;
+                    checkBoxData.Tick = null;
                 }
             }
         }

@@ -1,20 +1,33 @@
 namespace SunamoFilesIndex._sunamo;
 
+/// <summary>
+/// String helper methods
+/// </summary>
 internal class SH
 {
     #region SH.FirstCharUpper
-    internal static void FirstCharUpper(ref string nazevPP)
+    /// <summary>
+    /// Capitalizes the first character of the input string (ref version)
+    /// </summary>
+    /// <param name="text">The text to capitalize</param>
+    internal static void FirstCharUpper(ref string text)
     {
-        nazevPP = FirstCharUpper(nazevPP);
+        text = FirstCharUpper(text);
     }
-    internal static string FirstCharUpper(string nazevPP)
+
+    /// <summary>
+    /// Capitalizes the first character of the input string
+    /// </summary>
+    /// <param name="text">The text to capitalize</param>
+    /// <returns>String with capitalized first character</returns>
+    internal static string FirstCharUpper(string text)
     {
-        if (nazevPP.Length == 1)
+        if (text.Length == 1)
         {
-            return nazevPP.ToUpper();
+            return text.ToUpper();
         }
-        string sb = nazevPP.Substring(1);
-        return nazevPP[0].ToString().ToUpper() + sb;
+        string remainder = text.Substring(1);
+        return text[0].ToString().ToUpper() + remainder;
     }
     #endregion
 }
