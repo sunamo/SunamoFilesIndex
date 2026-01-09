@@ -18,16 +18,16 @@ public partial class FileIndex
         int columns = allRows.GetLength(1);
         int rows = allRows.GetLength(0);
         // List all files
-        for (int c = 0; c < columns; c++)
+        for (int columnIndex = 0; columnIndex < columns; columnIndex++)
         {
             // Create collections for all rows
             // key - row, value - size
             Dictionary<int, long> fileSize = [];
             // For easy compare of size and find out any difference
             List<long> fileSize2 = [];
-            for (int r = 0; r < rows; r++)
+            for (int rowIndex = 0; rowIndex < rows; rowIndex++)
             {
-                CheckBoxDataShared<TWithSize<string>> checkBoxData = allRows[r, c];
+                CheckBoxDataShared<TWithSize<string>> checkBoxData = allRows[rowIndex, columnIndex];
                 if (checkBoxData != null)
                 {
                     if (checkBoxData.Value == null)
@@ -35,7 +35,7 @@ public partial class FileIndex
                         throw new Exception($"{checkBoxData.Value} is null");
                     }
 
-                    fileSize.Add(r, checkBoxData.Value.Size);
+                    fileSize.Add(rowIndex, checkBoxData.Value.Size);
                     fileSize2.Add(checkBoxData.Value.Size);
                 }
             }
@@ -51,24 +51,24 @@ public partial class FileIndex
             {
                 if (min == max)
                 {
-                    TickIfItIsForDelete(allRows, 0, c, fileSize, min, max, false);
-                    for (int r = 1; r < rows; r++)
+                    TickIfItIsForDelete(allRows, 0, columnIndex, fileSize, min, max, false);
+                    for (int rowIndex = 1; rowIndex < rows; rowIndex++)
                     {
-                        TickIfItIsForDelete(allRows, r, c, fileSize, min, max, true);
+                        TickIfItIsForDelete(allRows, rowIndex, columnIndex, fileSize, min, max, true);
                     }
                 }
                 else
                 {
-                    for (int r = 0; r < rows; r++)
+                    for (int rowIndex = 0; rowIndex < rows; rowIndex++)
                     {
-                        TickIfItIsForDelete(allRows, r, c, fileSize, min, max, null);
+                        TickIfItIsForDelete(allRows, rowIndex, columnIndex, fileSize, min, max, null);
                     }
                 }
             }
             else
             {
                 // Maybe leave file with zero size?
-                TickIfItIsForDelete(allRows, 0, c, fileSize, min, max, false);
+                TickIfItIsForDelete(allRows, 0, columnIndex, fileSize, min, max, false);
             }
             #endregion
         }

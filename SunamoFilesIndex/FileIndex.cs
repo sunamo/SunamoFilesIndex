@@ -25,11 +25,6 @@ public partial class FileIndex
 
     private int _actualFolderID = -1;
 
-    /// <summary>
-    /// Note: Does not contain all processed folders
-    /// All folders as they were gradually added to AddFolderRecursively method
-    /// </summary>
-    static readonly List<string> directories = [];
 
     /// <summary>
     /// Gets the base path of the indexed folder structure
@@ -72,12 +67,11 @@ public partial class FileIndex
         folder = FS.WithEndSlash(folder);
         BasePath = folder;
         _actualFolderID++;
-        directories.Add(folder);
         var dirs = Directory.GetDirectories(folder, "*", SearchOption.AllDirectories);
-        foreach (var item in dirs)
+        foreach (var directory in dirs)
         {
-            _folders.Add(GetFolderItem(item));
-            AddFilesFromFolder(folder, item);
+            _folders.Add(GetFolderItem(directory));
+            AddFilesFromFolder(folder, directory);
         }
 
         AddFilesFromFolder(folder, FS.WithoutEndSlash(folder));
@@ -91,8 +85,8 @@ public partial class FileIndex
     /// <param name="folder">Full path to actual folder to process</param>
     private void AddFilesFromFolder(string basePath, string folder)
     {
-        var files2 = Directory.GetFiles(folder, "*.*", SearchOption.TopDirectoryOnly);
-        files2.ToList().ForEach(c => files.Add(GetFileItem(c, basePath)));
+        var filesInFolder = Directory.GetFiles(folder, "*.*", SearchOption.TopDirectoryOnly);
+        filesInFolder.ToList().ForEach(filePath => files.Add(GetFileItem(filePath, basePath)));
     }
 
     /// <summary>
@@ -204,11 +198,11 @@ public partial class FileIndex
     public static Dictionary<string, FileIndex> IndexFolders(IList<string> folders)
     {
         Dictionary<string, FileIndex> result = [];
-        foreach (var item in folders)
+        foreach (var folder in folders)
         {
             FileIndex fileIndex = new();
-            fileIndex.AddFolderRecursively(item);
-            result.Add(item, fileIndex);
+            fileIndex.AddFolderRecursively(folder);
+            result.Add(folder, fileIndex);
         }
 
         return result;
@@ -224,9 +218,9 @@ public partial class FileIndex
     /// <param name="filesFromAllFoldersUniqueRelative">List of relative file paths, used to fill dictionary, not modified</param>
     public static void AggregateFilesFromAllFolders(string folderOfSolution, FileIndex fileIndex, Dictionary<string, int> relativeFilePathForEveryColumn, List<string> filesFromAllFoldersUniqueRelative)
     {
-        foreach (var item2 in fileIndex.files)
+        foreach (var file in fileIndex.files)
         {
-            string relativeFilePath = (relativeDirectories[item2.IDRelativeDirectory] + item2.Name).Replace(folderOfSolution, "");
+            string relativeFilePath = (relativeDirectories[file.IDRelativeDirectory] + file.Name).Replace(folderOfSolution, "");
             if (!relativeFilePathForEveryColumn.ContainsKey(relativeFilePath))
             {
                 int relativeDirectoryId = filesFromAllFoldersUniqueRelative.IndexOf(relativeFilePath);
@@ -243,28 +237,28 @@ public partial class FileIndex
     /// <param name="files">Dictionary with folder paths as keys and FileIndex objects as values</param>
     /// <param name="relativeFilePathForEveryColumn">Dictionary where key is relative file path, value is column index</param>
     /// <returns>Matrix of CheckBoxData with file information</returns>
-    public static CheckBoxDataShared<TWithSize<string>?>[,] ExistsFilesOnDrive(Dictionary<string, FileIndex> files, Dictionary<string, int> relativeFilePathForEveryColumn)
+    public static CheckBoxDataShared<TWithSize<string>?>?[,] ExistsFilesOnDrive(Dictionary<string, FileIndex> files, Dictionary<string, int> relativeFilePathForEveryColumn)
     {
         int columns = relativeFilePathForEveryColumn.Count;
-        CheckBoxDataShared<TWithSize<string>?>[,] result = new CheckBoxDataShared<TWithSize<string>?>[files.Count, columns];
-        int r = -1;
+        CheckBoxDataShared<TWithSize<string>?>?[,] result = new CheckBoxDataShared<TWithSize<string>?>?[files.Count, columns];
+        int rowIndex = -1;
         // Process all rows
-        foreach (var item in files)
+        foreach (var fileIndexEntry in files)
         {
-            r++;
-            var fileIndex = item.Value;
-            for (int c = 0; c < fileIndex.files.Count; c++)
+            rowIndex++;
+            var fileIndex = fileIndexEntry.Value;
+            for (int columnIndex = 0; columnIndex < fileIndex.files.Count; columnIndex++)
             {
-                // get files in column c
-                var file = fileIndex.files[c];
-                string relativeFilePath = (relativeDirectories[file.IDRelativeDirectory] + file.Name).Replace(item.Key, "");
+                // get files in column
+                var file = fileIndex.files[columnIndex];
+                string relativeFilePath = (relativeDirectories[file.IDRelativeDirectory] + file.Name).Replace(fileIndexEntry.Key, "");
                 int columnToInsert = relativeFilePathForEveryColumn[relativeFilePath];
                 string fullFilePath = relativeDirectories[file.IDRelativeDirectory] + file.Name;
                 if (File.Exists(fullFilePath))
                 {
                     long fileSize = new FileInfo(fullFilePath).Length;
                     // To result set CheckBoxData - full path and size
-                    result[r, columnToInsert] = new CheckBoxDataShared<TWithSize<string>?>
+                    result[rowIndex, columnToInsert] = new CheckBoxDataShared<TWithSize<string>?>
                     {
                         Value = new TWithSize<string>
                         {
@@ -275,9 +269,7 @@ public partial class FileIndex
                 }
                 else
                 {
-#pragma warning disable CS8625
-                    result[r, columnToInsert] = null;
-#pragma warning restore
+                    result[rowIndex, columnToInsert] = null;
                 }
             }
         }
