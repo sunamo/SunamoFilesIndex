@@ -16,7 +16,7 @@ public partial class FileIndex
     /// <summary>
     /// All files in the index
     /// </summary>
-    public List<FileItem> files = [];
+    public List<FileItem> Files = [];
 
     /// <summary>
     /// All folders which were processed except root
@@ -54,7 +54,7 @@ public partial class FileIndex
     /// <returns>List of files with matching name</returns>
     public List<FileItem> FindAllFilesWithName(string name)
     {
-        return files.FindAll(d => d.Name == name);
+        return Files.FindAll(d => d.Name == name);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public partial class FileIndex
     private void AddFilesFromFolder(string basePath, string folder)
     {
         var filesInFolder = Directory.GetFiles(folder, "*.*", SearchOption.TopDirectoryOnly);
-        filesInFolder.ToList().ForEach(filePath => files.Add(GetFileItem(filePath, basePath)));
+        filesInFolder.ToList().ForEach(filePath => Files.Add(GetFileItem(filePath, basePath)));
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public partial class FileIndex
     public void Nuke()
     {
         _folders.Clear();
-        files.Clear();
+        Files.Clear();
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ public partial class FileIndex
     /// <returns>List of files in that directory</returns>
     public IList<FileItem> GetFilesInRelativeFolder(int relativeDirectoryIndex)
     {
-        return files.Where(c => c.IDRelativeDirectory == relativeDirectoryIndex).ToList();
+        return Files.Where(c => c.IDRelativeDirectory == relativeDirectoryIndex).ToList();
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public partial class FileIndex
     /// <param name="filesFromAllFoldersUniqueRelative">List of relative file paths, used to fill dictionary, not modified</param>
     public static void AggregateFilesFromAllFolders(string folderOfSolution, FileIndex fileIndex, Dictionary<string, int> relativeFilePathForEveryColumn, List<string> filesFromAllFoldersUniqueRelative)
     {
-        foreach (var file in fileIndex.files)
+        foreach (var file in fileIndex.Files)
         {
             string relativeFilePath = (relativeDirectories[file.IDRelativeDirectory] + file.Name).Replace(folderOfSolution, "");
             if (!relativeFilePathForEveryColumn.ContainsKey(relativeFilePath))
@@ -247,10 +247,10 @@ public partial class FileIndex
         {
             rowIndex++;
             var fileIndex = fileIndexEntry.Value;
-            for (int columnIndex = 0; columnIndex < fileIndex.files.Count; columnIndex++)
+            for (int columnIndex = 0; columnIndex < fileIndex.Files.Count; columnIndex++)
             {
                 // get files in column
-                var file = fileIndex.files[columnIndex];
+                var file = fileIndex.Files[columnIndex];
                 string relativeFilePath = (relativeDirectories[file.IDRelativeDirectory] + file.Name).Replace(fileIndexEntry.Key, "");
                 int columnToInsert = relativeFilePathForEveryColumn[relativeFilePath];
                 string fullFilePath = relativeDirectories[file.IDRelativeDirectory] + file.Name;
