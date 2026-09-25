@@ -1,8 +1,18 @@
 namespace SunamoFilesIndex;
 
+/// <summary>
+/// Resembles database work - uses int numbers to mark folders
+///
+/// Working with CheckBoxData
+/// Use FolderItem, FileItem
+/// </summary>
 public partial class FileIndex
 {
-    // Check (or uncheck) all in columns by filesize
+    /// <summary>
+    /// Check (or uncheck) all in columns by filesize
+    /// </summary>
+    /// <param name="allRows">The matrix of checkbox data to process</param>
+    /// <returns>Updated matrix with ticked/unticked checkboxes based on file sizes</returns>
     public static CheckBoxDataShared<TWithSize<string>>[,] CheckVertically(CheckBoxDataShared<TWithSize<string>>[,] allRows)
     {
         int columns = allRows.GetLength(1);
@@ -66,6 +76,20 @@ public partial class FileIndex
         return allRows;
     }
 
+    /// <summary>
+    /// Check CheckBox based on file size conditions at specified row and column location
+    ///
+    /// If size equals min, check the checkbox.
+    /// If size equals max, uncheck the checkbox.
+    /// Otherwise set to null or use forceToAll value if specified.
+    /// </summary>
+    /// <param name="allRows">The matrix of checkbox data</param>
+    /// <param name="row">Row index</param>
+    /// <param name="column">Column index</param>
+    /// <param name="fileSize">Dictionary with row indices as keys and file sizes as values</param>
+    /// <param name="min">Minimum file size</param>
+    /// <param name="max">Maximum file size</param>
+    /// <param name="forceToAll">Optional forced value for all checkboxes</param>
     private static void TickIfItIsForDelete(CheckBoxDataShared<TWithSize<string>>[,] allRows, int row, int column, Dictionary<int, long> fileSize, long min, long max, bool? forceToAll)
     {
         CheckBoxDataShared<TWithSize<string>> checkBoxData = allRows[row, column];
