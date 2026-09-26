@@ -10,10 +10,7 @@ internal class FS
     /// </summary>
     /// <param name="path">The path to process</param>
     /// <returns>Path without ending slash</returns>
-    internal static string WithoutEndSlash(string path)
-    {
-        return WithoutEndSlash(ref path);
-    }
+    internal static string WithoutEndSlash(string path) => WithoutEndSlash(ref path);
 
     /// <summary>
     /// Removes trailing backslash from path (ref version)
@@ -31,10 +28,7 @@ internal class FS
     /// </summary>
     /// <param name="path">The path to process</param>
     /// <returns>Path with ending slash</returns>
-    internal static string WithEndSlash(string path)
-    {
-        return WithEndSlash(ref path);
-    }
+    internal static string WithEndSlash(string path) => WithEndSlash(ref path);
 
     /// <summary>
     /// Ensures path ends with backslash and capitalizes first character (ref version)

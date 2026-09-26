@@ -26,7 +26,7 @@ internal class SH
         {
             return text.ToUpper();
         }
-        string remainder = text.Substring(1);
+        var remainder = text.Substring(1);
         return text[0].ToString().ToUpper() + remainder;
     }
     #endregion

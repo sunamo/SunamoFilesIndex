@@ -102,36 +102,15 @@ public partial class FileIndex
             }
             else if (currentFileSize == max)
             {
-                if (forceToAll.HasValue)
-                {
-                    checkBoxData.Tick = forceToAll.Value;
-                }
-                else
-                {
-                    checkBoxData.Tick = false;
-                }
+                checkBoxData.Tick = forceToAll.HasValue ? forceToAll.Value : false;
             }
             else if (currentFileSize == min)
             {
-                if (forceToAll.HasValue)
-                {
-                    checkBoxData.Tick = forceToAll.Value;
-                }
-                else
-                {
-                    checkBoxData.Tick = true;
-                }
+                checkBoxData.Tick = forceToAll.HasValue ? forceToAll.Value : true;
             }
             else
             {
-                if (forceToAll.HasValue)
-                {
-                    checkBoxData.Tick = forceToAll.Value;
-                }
-                else
-                {
-                    checkBoxData.Tick = null;
-                }
+                checkBoxData.Tick = forceToAll.HasValue ? forceToAll.Value : (bool?)null;
             }
         }
     }
