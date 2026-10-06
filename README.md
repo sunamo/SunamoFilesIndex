@@ -1,5 +1,10 @@
 # SunamoFilesIndex
 
+## Short description
+
+Indexování souborů a složek a jejich získávání podle podmínek.
+
+
 Index files/folders and getting them with conditions
 
 ## Overview
