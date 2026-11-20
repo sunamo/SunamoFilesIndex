@@ -1,4 +1,3 @@
-// variables names: ok
 namespace SunamoFilesIndex.Interfaces;
 
 internal interface IFSItem : IName, IPath, IIDParent
