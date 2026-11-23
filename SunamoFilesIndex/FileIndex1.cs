@@ -3,6 +3,11 @@ namespace SunamoFilesIndex;
 public partial class FileIndex
 {
     // Check (or uncheck) all in columns by filesize
+    /// <summary>
+    /// Check vertically.
+    /// </summary>
+    /// <param name="allRows">The all rows.</param>
+    /// <returns>The check vertically result.</returns>
     public static CheckBoxDataShared<TWithSize<string>>[,] CheckVertically(CheckBoxDataShared<TWithSize<string>>[,] allRows)
     {
         int columns = allRows.GetLength(1);

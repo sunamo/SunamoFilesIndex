@@ -1,9 +1,17 @@
 namespace SunamoFilesIndex.Data;
 
+/// <summary>
+/// Represents the check box data shared t type.
+/// </summary>
 public class CheckBoxDataShared<T>
 {
-    // true = checked, false = unchecked, null = indeterminate
+    /// <summary>
+    /// Gets or sets the tick.
+    /// </summary>
     public bool? Tick { get; set; } = false;
 
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
     public T? Value { get; set; } = default;
 }
