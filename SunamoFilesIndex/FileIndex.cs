@@ -57,6 +57,11 @@ public partial class FileIndex
     /// <returns>The add folder recursively result.</returns>
     public void AddFolderRecursively(string folder)
     {
+        if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
+        {
+            return;
+        }
+
         folder = FS.WithEndSlash(folder);
         BasePath = folder;
         _actualFolderID++;
@@ -108,6 +113,32 @@ public partial class FileIndex
         return relativeDirectories[folder];
     }
 
+    /// <summary>
+    /// Gets the number of files in the index.
+    /// </summary>
+    public int Count => Files.Count;
+
+    /// <summary>
+    /// Returns the identifier (counted from 1) of a relative directory written with either kind of slash, or 0 when no indexed file lies in it.
+    /// </summary>
+    /// <param name="relativeDirectory">The directory relative to the indexed folder; empty for the indexed folder itself.</param>
+    /// <returns>The identifier used by <see cref="FileItem.IDRelativeDirectory"/>, or 0.</returns>
+    public int FolderId(string? relativeDirectory)
+    {
+        var normalized = (relativeDirectory ?? string.Empty).Replace('/', '\\').Trim('\\');
+        return relativeDirectories.IndexOf(normalized) + 1;
+    }
+
+    /// <summary>
+    /// Returns the full path of an indexed file, built from the folder indexed last, the relative directory and the file name.
+    /// </summary>
+    /// <param name="item">The file from this index.</param>
+    /// <returns>The full path of the file.</returns>
+    public string GetFullPath(FileItem item)
+    {
+        return Path.Combine(BasePath ?? string.Empty, relativeDirectories[item.IDRelativeDirectory - 1], item.Name ?? string.Empty);
+    }
+
     private FileItem GetFileItem(string path, string basePath)
     {
         FileItem fileItem = new()
@@ -121,7 +152,10 @@ public partial class FileIndex
             throw new Exception($"{basePathName} is null");
         }
 
-        string relDirName = basePathName.Replace(basePath, "");
+        // Files directly in the indexed folder have an empty relative directory.
+        string relDirName = string.Equals(FS.WithEndSlash(basePathName), basePath, StringComparison.OrdinalIgnoreCase)
+            ? string.Empty
+            : basePathName.Replace(basePath, "");
         if (!relativeDirectories.Contains(relDirName))
         {
             relativeDirectories.Add(relDirName);
